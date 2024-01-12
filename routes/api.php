@@ -34,10 +34,24 @@ Route::get('/login', function () {
  // Routes and endpoints for products
  
  
- Route::middleware('auth:sanctum')->get('/presents', function () {
-   $presents = DB::select('SELECT * FROM presents');
-   return response()->json($presents);
- });
+ Route::get('/presents', function () {
+  $presents = DB::table('presents')
+      ->join('users', 'users.id', '=', 'presents.user_id')
+      ->select(
+          'presents.id',
+          'presents.name',
+          'presents.done',
+          'presents.price',
+          'presents.img',
+          'users.name as owner',
+          'users.remember_token as token',
+          'users.id as userid'
+      )->get();
+
+  return response()->json($presents);
+});
+
+
  
  Route::post('/presents', function (Request $request) {
    $name = $request->name;
