@@ -87,6 +87,10 @@ Route::get('/login', function () {
 
  // Routes and endpoints for users
 
+ Route::get('/users', function () {
+   $users = DB::table('users')->get();
+   return response()->json($users);
+ });
 
 
  // temp token routes
