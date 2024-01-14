@@ -92,6 +92,24 @@ Route::get('/login', function () {
    return response()->json($users);
  });
 
+ Route::post('/users', function (Request $request) {
+  $validatedData = $request->validate([
+      'name' => 'required|max:255',
+      'password' => 'required',
+      'email' => 'required|email|unique:users',
+  ]);
+
+  $id = DB::table('users')->insertGetId([
+      'name' => $validatedData['name'],
+      'password' => $validatedData['password'],
+      'email' => $validatedData['email'],
+      'created_at' => now(),
+      'updated_at' => now()
+  ]);
+
+  return response()->json(['id' => $id], 201);
+});
+
 
  // temp token routes
  Route::post('/tokens/create', function (Request $request) {
