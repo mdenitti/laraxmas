@@ -95,19 +95,27 @@ Route::get('/login', function () {
  Route::post('/users', function (Request $request) {
   $validatedData = $request->validate([
       'name' => 'required|max:255',
-      'password' => 'required',
       'email' => 'required|email|unique:users',
+      'password' => 'required',
   ]);
 
-  $id = DB::table('users')->insertGetId([
+  $user = User::create([
       'name' => $validatedData['name'],
-      'password' => $validatedData['password'],
       'email' => $validatedData['email'],
+      'password' => Hash::make($validatedData['password']),
       'created_at' => now(),
-      'updated_at' => now()
+      'updated_at' => now(),
   ]);
 
-  return response()->json(['id' => $id], 201);
+  // Ensure the User model is using the HasApiTokens trait
+  $token = $user->createToken('auth_token')->plainTextToken;
+
+  // Update the remember_token in the database with the new token
+  DB::table('users')
+      ->where('id', $user->id)
+      ->update(['remember_token' => $token]);
+
+  return response()->json(['id' => $user->id, 'token' => $token], 201);
 });
 
 
