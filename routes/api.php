@@ -102,7 +102,7 @@ Route::get('/login', function () {
   $user = User::create([
       'name' => $validatedData['name'],
       'email' => $validatedData['email'],
-      'password' => Hash::make($validatedData['password']),
+      'password' => $validatedData['password'],
       'created_at' => now(),
       'updated_at' => now(),
   ]);
